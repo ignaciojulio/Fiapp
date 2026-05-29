@@ -1,4 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
+import type { FC, ReactNode } from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import {
   CapacitorSQLite,
@@ -11,14 +11,12 @@ interface SQLiteContextProps {
   isReady: boolean;
 }
 
-const DatabaseContext = createContext<SQLiteContextProps>({
+export const DatabaseContext = createContext<SQLiteContextProps>({
   db: null,
   isReady: false,
 });
 
-export const SQLiteProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const SQLiteProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [db, setDb] = useState<SQLiteDBConnection | null>(null);
   const [isReady, setIsReady] = useState(false);
 
@@ -32,7 +30,8 @@ export const SQLiteProvider: React.FC<{ children: React.ReactNode }> = ({
           'main_db',
           false,
           'no-encryption',
-          1
+          1,
+          false
         );
 
         await connection.open();
@@ -63,5 +62,3 @@ export const SQLiteProvider: React.FC<{ children: React.ReactNode }> = ({
     </DatabaseContext.Provider>
   );
 };
-
-export const useDatabase = () => useContext(DatabaseContext);

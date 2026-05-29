@@ -1,12 +1,7 @@
 import type { FC } from 'react';
-import {
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/react';
+import { IonHeader, IonToolbar, IonTitle, IonContent } from '@ionic/react';
 import { useClientes } from '../hooks/useClientes';
+import { IonPage } from '@ionic/react';
 
 const Home: FC = () => {
   const { data, isLoading, error } = useClientes();

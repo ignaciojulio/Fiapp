@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useDatabase } from '../context/DatabaseContext';
+import { useDatabase } from '../context/useDatabase';
 
 export const useClientes = () => {
   const { db, isReady } = useDatabase();
