@@ -19,10 +19,7 @@
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": [
-    "react",
-    "@typescript-eslint"
-  ],
+  "plugins": ["react", "@typescript-eslint"],
   "rules": {
     "react/react-in-jsx-scope": "off", // No es necesario importar React en versiones modernas
     "no-unused-vars": "off", // Desactivamos la de JS nativo

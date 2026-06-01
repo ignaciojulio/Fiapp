@@ -24,9 +24,12 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       ...prettierConfig.rules,
       'prettier/prettier': 'error',
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
       'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
       'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     },
-  },
+  }
 );
