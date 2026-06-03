@@ -1,0 +1,71 @@
+import React from 'react';
+import { renderHook, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useClientes } from '../hooks/useClientes';
+import * as dbContext from './../context/useDatabase';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from '@jest/globals';
+import { SQLiteDBConnection } from '@capacitor-community/sqlite';
+
+// Mockeamos el hook que consume el contexto de la base de datos
+jest.mock('../../context/useDatabase');
+
+describe('Hook: useClientes', () => {
+  let queryClient: QueryClient;
+
+  beforeEach(() => {
+    // Instanciamos un nuevo QueryClient para cada test, aislando la caché
+    queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const wrapper = ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+
+  it('no debe ejecutar la consulta si la base de datos no está lista (enabled: false)', () => {
+    // Arrange: Simulamos que la DB no está lista
+    jest
+      .spyOn(dbContext, 'useDatabase')
+      .mockReturnValue({ db: null, isReady: false });
+
+    // Act
+    const { result } = renderHook(() => useClientes(), { wrapper });
+
+    // Assert: El status de fetch debe quedarse en 'idle' gracias a `enabled: isReady`
+    expect(result.current.fetchStatus).toBe('idle');
+  });
+
+  it('debe ejecutar la consulta y retornar los clientes cuando la DB está lista', async () => {
+    // Arrange: Simulamos una DB lista con datos
+    const mockDb = ({
+      query: jest.fn<() => Promise<any>>().mockResolvedValue({
+        values: [{ id: 1, nombre: 'Juan Perez' }],
+      }),
+    } as unknown) as SQLiteDBConnection;
+
+    jest
+      .spyOn(dbContext, 'useDatabase')
+      .mockReturnValue({ db: mockDb, isReady: true });
+
+    // Act
+    const { result } = renderHook(() => useClientes(), { wrapper });
+
+    // Assert: Esperamos a que la petición sea exitosa
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toEqual([{ id: 1, nombre: 'Juan Perez' }]);
+    expect(mockDb.query).toHaveBeenCalledWith('SELECT * FROM clientes;');
+  });
+});

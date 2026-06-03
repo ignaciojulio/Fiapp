@@ -1,5 +1,5 @@
 import type { FC, ReactNode } from 'react';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import {
   CapacitorSQLite,
   SQLiteConnection,
@@ -26,13 +26,20 @@ export const SQLiteProvider: FC<{ children: ReactNode }> = ({ children }) => {
       try {
         await sqlite.checkConnectionsConsistency();
 
-        const connection = await sqlite.createConnection(
-          'main_db',
-          false,
-          'no-encryption',
-          1,
-          false
-        );
+        const isConn = (await sqlite.isConnection('main_db', false)).result;
+        let connection: SQLiteDBConnection;
+
+        if (isConn) {
+          connection = await sqlite.retrieveConnection('main_db', false);
+        } else {
+          connection = await sqlite.createConnection(
+            'main_db',
+            false,
+            'no-encryption',
+            1,
+            false
+          );
+        }
 
         await connection.open();
 
