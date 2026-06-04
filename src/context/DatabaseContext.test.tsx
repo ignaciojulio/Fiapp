@@ -1,24 +1,22 @@
 import React, { useContext } from 'react';
-import { jest, describe, it, expect } from '@jest/globals';
+import { vi, describe, it, expect } from 'vitest';
 import { render, waitFor, screen } from '@testing-library/react';
 import { SQLiteProvider, DatabaseContext } from './DatabaseContext';
 
 // Mock de las dependencias nativas de Capacitor SQLite
-jest.mock('@capacitor-community/sqlite', () => {
+vi.mock('@capacitor-community/sqlite', () => {
   const mockConnection = {
-    open: jest.fn<() => Promise<void>>().mockResolvedValue(undefined),
-    execute: jest.fn<() => Promise<any>>().mockResolvedValue({}),
+    open: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
+    execute: vi.fn<() => Promise<any>>().mockResolvedValue({}),
   };
 
   return {
     CapacitorSQLite: {},
-    SQLiteConnection: jest.fn().mockImplementation(() => ({
-      checkConnectionsConsistency: jest
-        .fn()
-        .mockResolvedValue({ result: true }),
-      isConnection: jest.fn().mockResolvedValue({ result: false }),
-      createConnection: jest.fn().mockResolvedValue(mockConnection),
-      retrieveConnection: jest.fn().mockResolvedValue(mockConnection),
+    SQLiteConnection: vi.fn().mockImplementation(() => ({
+      checkConnectionsConsistency: vi.fn().mockResolvedValue({ result: true }),
+      isConnection: vi.fn().mockResolvedValue({ result: false }),
+      createConnection: vi.fn().mockResolvedValue(mockConnection),
+      retrieveConnection: vi.fn().mockResolvedValue(mockConnection),
     })),
   };
 });

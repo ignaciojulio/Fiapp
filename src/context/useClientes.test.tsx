@@ -3,18 +3,11 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useClientes } from '../hooks/useClientes';
 import * as dbContext from './useDatabase';
-import {
-  afterEach,
-  beforeEach,
-  describe,
-  expect,
-  it,
-  jest,
-} from '@jest/globals';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 
 // Mockeamos el hook que consume el contexto de la base de datos
-jest.mock('./useDatabase');
+vi.mock('./useDatabase');
 
 describe('Hook: useClientes', () => {
   let queryClient: QueryClient;
@@ -27,7 +20,7 @@ describe('Hook: useClientes', () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -36,9 +29,10 @@ describe('Hook: useClientes', () => {
 
   it('no debe ejecutar la consulta si la base de datos no está lista (enabled: false)', () => {
     // Arrange: Simulamos que la DB no está lista
-    jest
-      .spyOn(dbContext, 'useDatabase')
-      .mockReturnValue({ db: null, isReady: false });
+    vi.spyOn(dbContext, 'useDatabase').mockReturnValue({
+      db: null,
+      isReady: false,
+    });
 
     // Act
     const { result } = renderHook(() => useClientes(), { wrapper });
@@ -50,14 +44,15 @@ describe('Hook: useClientes', () => {
   it('debe ejecutar la consulta y retornar los clientes cuando la DB está lista', async () => {
     // Arrange: Simulamos una DB lista con datos
     const mockDb = {
-      query: jest.fn<() => Promise<any>>().mockResolvedValue({
+      query: vi.fn<() => Promise<any>>().mockResolvedValue({
         values: [{ id: 1, nombre: 'Juan Perez' }],
       }),
     } as unknown as SQLiteDBConnection;
 
-    jest
-      .spyOn(dbContext, 'useDatabase')
-      .mockReturnValue({ db: mockDb, isReady: true });
+    vi.spyOn(dbContext, 'useDatabase').mockReturnValue({
+      db: mockDb,
+      isReady: true,
+    });
 
     // Act
     const { result } = renderHook(() => useClientes(), { wrapper });
