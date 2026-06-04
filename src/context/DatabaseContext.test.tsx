@@ -13,8 +13,9 @@ jest.mock('@capacitor-community/sqlite', () => {
   return {
     CapacitorSQLite: {},
     SQLiteConnection: jest.fn().mockImplementation(() => ({
-      checkConnectionsConsistency: jest.fn().mockResolvedValue(true),
-      checkConnectionsConsistency: jest.fn().mockResolvedValue({ result: true }),
+      checkConnectionsConsistency: jest
+        .fn()
+        .mockResolvedValue({ result: true }),
       isConnection: jest.fn().mockResolvedValue({ result: false }),
       createConnection: jest.fn().mockResolvedValue(mockConnection),
       retrieveConnection: jest.fn().mockResolvedValue(mockConnection),

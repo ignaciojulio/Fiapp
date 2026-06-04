@@ -2,7 +2,7 @@ import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useClientes } from '../hooks/useClientes';
-import * as dbContext from './../context/useDatabase';
+import * as dbContext from './useDatabase';
 import {
   afterEach,
   beforeEach,
@@ -14,7 +14,7 @@ import {
 import { SQLiteDBConnection } from '@capacitor-community/sqlite';
 
 // Mockeamos el hook que consume el contexto de la base de datos
-jest.mock('../../context/useDatabase');
+jest.mock('./useDatabase');
 
 describe('Hook: useClientes', () => {
   let queryClient: QueryClient;
@@ -49,11 +49,11 @@ describe('Hook: useClientes', () => {
 
   it('debe ejecutar la consulta y retornar los clientes cuando la DB está lista', async () => {
     // Arrange: Simulamos una DB lista con datos
-    const mockDb = ({
+    const mockDb = {
       query: jest.fn<() => Promise<any>>().mockResolvedValue({
         values: [{ id: 1, nombre: 'Juan Perez' }],
       }),
-    } as unknown) as SQLiteDBConnection;
+    } as unknown as SQLiteDBConnection;
 
     jest
       .spyOn(dbContext, 'useDatabase')
