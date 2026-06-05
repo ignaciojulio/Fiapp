@@ -9,11 +9,14 @@ export interface Cliente {
   created_at: string;
 }
 
+// Definimos la Query Key estricta como una constante inmutable (Tuple)
+export const CLIENTES_QUERY_KEY = ['clientes'] as const;
+
 export const useClientes = () => {
   const { db, isReady } = useDatabase();
 
   return useQuery({
-    queryKey: ['clientes'],
+    queryKey: CLIENTES_QUERY_KEY,
     queryFn: async (): Promise<Cliente[]> => {
       if (!isReady || !db) throw new Error('Acceso prematuro a la DB');
 
