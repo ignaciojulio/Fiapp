@@ -1,11 +1,7 @@
 import { useState, type FC } from 'react';
-import {
-  QueryClient,
-  QueryClientProvider,
-  QueryErrorResetBoundary,
-} from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { SQLiteProvider } from './context/DatabaseContext';
-import { ErrorBoundary } from './components/ErrorBoundary';
 import {
   IonApp,
   IonContent,
@@ -20,6 +16,21 @@ setupIonicReact();
 
 const queryClient = new QueryClient();
 
+const DatabaseErrorFallback = ({
+  error,
+  resetErrorBoundary,
+}: FallbackProps) => (
+  <IonApp>
+    <IonContent fullscreen>
+      <div style={{ padding: 24 }}>
+        <h1>Error en la base de datos</h1>
+        <p>{error?.message ?? 'Error al inicializar SQLite'}</p>
+        <button onClick={resetErrorBoundary}>Reintentar</button>
+      </div>
+    </IonContent>
+  </IonApp>
+);
+
 const App: FC = () => {
   const [databaseKey, setDatabaseKey] = useState(0);
 
@@ -30,40 +41,26 @@ const App: FC = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <QueryErrorResetBoundary>
-        {({ reset }) => (
-          <ErrorBoundary
-            resetErrorBoundary={reset}
-            onReset={handleDatabaseReset}
-            fallbackRender={({ error, resetErrorBoundary }) => (
-              <IonApp>
-                <IonContent fullscreen>
-                  <div style={{ padding: 24 }}>
-                    <h1>Error crítico de base de datos</h1>
-                    <p>{error.message}</p>
-                    <button onClick={resetErrorBoundary}>Reintentar</button>
-                  </div>
-                </IonContent>
-              </IonApp>
-            )}
-          >
-            <SQLiteProvider key={databaseKey}>
-              <IonApp>
-                <IonReactRouter>
-                  <IonRouterOutlet>
-                    <Route exact path="/home">
-                      <Home />
-                    </Route>
-                    <Route exact path="/">
-                      <Redirect to="/home" />
-                    </Route>
-                  </IonRouterOutlet>
-                </IonReactRouter>
-              </IonApp>
-            </SQLiteProvider>
-          </ErrorBoundary>
-        )}
-      </QueryErrorResetBoundary>
+      <ErrorBoundary
+        FallbackComponent={DatabaseErrorFallback}
+        onReset={handleDatabaseReset}
+        resetKeys={[databaseKey]}
+      >
+        <SQLiteProvider key={databaseKey}>
+          <IonApp>
+            <IonReactRouter>
+              <IonRouterOutlet>
+                <Route exact path="/home">
+                  <Home />
+                </Route>
+                <Route exact path="/">
+                  <Redirect to="/home" />
+                </Route>
+              </IonRouterOutlet>
+            </IonReactRouter>
+          </IonApp>
+        </SQLiteProvider>
+      </ErrorBoundary>
     </QueryClientProvider>
   );
 };

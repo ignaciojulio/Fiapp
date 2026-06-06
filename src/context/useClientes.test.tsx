@@ -1,8 +1,8 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { renderHook, waitFor } from '@testing-library/react';
-import { useClientes, useCreateCliente } from '../hooks/useClientes';
+import { useClientes } from '../hooks/useClientes';
+import { useCreateCliente } from '../hooks/useCreateCliente';
 import * as dbContext from './useDatabase';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SQLiteDBConnection } from '@capacitor-community/sqlite';
@@ -36,6 +36,7 @@ describe('Hook: useClientes', () => {
     vi.spyOn(dbContext, 'useDatabase').mockReturnValue({
       db: null,
       isReady: false,
+      error: null,
     });
 
     // Act
@@ -56,6 +57,7 @@ describe('Hook: useClientes', () => {
     vi.spyOn(dbContext, 'useDatabase').mockReturnValue({
       db: mockDb,
       isReady: true,
+      error: null,
     });
 
     // Act
@@ -78,6 +80,7 @@ describe('Hook: useClientes', () => {
     vi.spyOn(dbContext, 'useDatabase').mockReturnValue({
       db: mockDb,
       isReady: true,
+      error: null,
     });
 
     const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
@@ -93,6 +96,9 @@ describe('Hook: useClientes', () => {
       'INSERT INTO clientes (nombre, telefono, habeas_data_accepted) VALUES (?, ?, ?);',
       ['Ana Gómez', '+5491123456789', 1]
     );
-    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['clientes'] });
+    expect(invalidateSpy).toHaveBeenCalledWith({
+      queryKey: ['clientes'],
+      exact: true,
+    });
   });
 });

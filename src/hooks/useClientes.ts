@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useDatabase } from '../context/useDatabase';
 
 export interface Cliente {
@@ -21,7 +21,7 @@ export const CLIENTES_QUERY_KEY = ['clientes'] as const;
 export const useClientes = () => {
   const { db, isReady } = useDatabase();
 
-  return useQuery({
+  const query = useQuery<Cliente[]>({
     queryKey: CLIENTES_QUERY_KEY,
     queryFn: async (): Promise<Cliente[]> => {
       if (!isReady || !db) throw new Error('Acceso prematuro a la DB');
@@ -35,27 +35,11 @@ export const useClientes = () => {
     // staleTime: 0 es el valor por defecto en TanStack Query. De este modo,
     // cada invalidación forzará una lectura real desde SQLite.
   });
-};
 
-export const useCreateCliente = () => {
-  const { db } = useDatabase();
-  const queryClient = useQueryClient();
+  const clientes = query.data ?? [];
 
-  return useMutation({
-    mutationFn: async (nuevoCliente: CreateClientePayload) => {
-      if (!db) throw new Error('Conexión a disco fallida');
-
-      return await db.run(
-        'INSERT INTO clientes (nombre, telefono, habeas_data_accepted) VALUES (?, ?, ?);',
-        [
-          nuevoCliente.nombre,
-          nuevoCliente.telefono,
-          nuevoCliente.habeas_data_accepted ? 1 : 0,
-        ]
-      );
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CLIENTES_QUERY_KEY });
-    },
-  });
+  return {
+    ...query,
+    clientes,
+  };
 };

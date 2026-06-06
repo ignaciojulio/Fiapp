@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import type { FC, ReactNode } from 'react';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
 import {
   CapacitorSQLite,
   SQLiteConnection,
@@ -110,8 +110,13 @@ export const SQLiteProvider: FC<{ children: ReactNode }> = ({ children }) => {
     throw error;
   }
 
+  const contextValue = useMemo(
+    () => ({ db, isReady, error }),
+    [db, error, isReady]
+  );
+
   return (
-    <DatabaseContext.Provider value={{ db, isReady, error }}>
+    <DatabaseContext.Provider value={contextValue}>
       {children}
     </DatabaseContext.Provider>
   );
