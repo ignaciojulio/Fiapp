@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useDatabase } from '../context/useDatabase';
 
 export interface Cliente {
@@ -7,6 +7,12 @@ export interface Cliente {
   telefono: string;
   habeas_data_accepted: number;
   created_at: string;
+}
+
+export interface CreateClientePayload {
+  nombre: string;
+  telefono: string;
+  habeas_data_accepted: boolean;
 }
 
 // Definimos la Query Key estricta como una constante inmutable (Tuple)
@@ -26,6 +32,30 @@ export const useClientes = () => {
       return result.values || [];
     },
     enabled: isReady,
-    staleTime: 1000 * 60 * 5,
+    // staleTime: 0 es el valor por defecto en TanStack Query. De este modo,
+    // cada invalidación forzará una lectura real desde SQLite.
+  });
+};
+
+export const useCreateCliente = () => {
+  const { db } = useDatabase();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (nuevoCliente: CreateClientePayload) => {
+      if (!db) throw new Error('Conexión a disco fallida');
+
+      return await db.run(
+        'INSERT INTO clientes (nombre, telefono, habeas_data_accepted) VALUES (?, ?, ?);',
+        [
+          nuevoCliente.nombre,
+          nuevoCliente.telefono,
+          nuevoCliente.habeas_data_accepted ? 1 : 0,
+        ]
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CLIENTES_QUERY_KEY });
+    },
   });
 };

@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import type { FC, ReactNode } from 'react';
 import { createContext, useEffect, useState } from 'react';
 import {
@@ -9,11 +10,13 @@ import {
 interface SQLiteContextProps {
   db: SQLiteDBConnection | null;
   isReady: boolean;
+  error: Error | null;
 }
 
 export const DatabaseContext = createContext<SQLiteContextProps>({
   db: null,
   isReady: false,
+  error: null,
 });
 
 // 🚀 SINGLETON A NIVEL DE MÓDULO (Inmune al ciclo de vida de React)
@@ -24,6 +27,7 @@ let initPromise: Promise<SQLiteDBConnection> | null = null;
 export const SQLiteProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const [db, setDb] = useState<SQLiteDBConnection | null>(globalDbInstance);
   const [isReady, setIsReady] = useState<boolean>(!!globalDbInstance);
+  const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -77,11 +81,14 @@ export const SQLiteProvider: FC<{ children: ReactNode }> = ({ children }) => {
         if (isMounted) {
           setDb(connection);
           setIsReady(true);
+          setError(null);
         }
       } catch (err) {
         console.error('Fallo crítico en SQLiteProvider:', err);
         initPromise = null; // Liberamos el candado para permitir reintentos
-        // En un escenario real offline-first podríamos lanzar una UI de error fatal aquí.
+        if (isMounted) {
+          setError(err instanceof Error ? err : new Error(String(err)));
+        }
       }
     };
 
@@ -99,8 +106,12 @@ export const SQLiteProvider: FC<{ children: ReactNode }> = ({ children }) => {
     };
   }, []);
 
+  if (error) {
+    throw error;
+  }
+
   return (
-    <DatabaseContext.Provider value={{ db, isReady }}>
+    <DatabaseContext.Provider value={{ db, isReady, error }}>
       {children}
     </DatabaseContext.Provider>
   );

@@ -6,8 +6,8 @@ import { SQLiteProvider, DatabaseContext } from './DatabaseContext';
 // Mock de las dependencias nativas de Capacitor SQLite
 vi.mock('@capacitor-community/sqlite', () => {
   const mockConnection = {
-    open: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
-    execute: vi.fn<() => Promise<any>>().mockResolvedValue({}),
+    open: vi.fn<unknown[], Promise<void>>().mockResolvedValue(undefined),
+    execute: vi.fn<unknown[], Promise<unknown>>().mockResolvedValue({}),
   };
 
   return {

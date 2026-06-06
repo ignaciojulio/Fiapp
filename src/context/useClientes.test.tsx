@@ -1,7 +1,8 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useClientes } from '../hooks/useClientes';
+import { renderHook, waitFor } from '@testing-library/react';
+import { useClientes, useCreateCliente } from '../hooks/useClientes';
 import * as dbContext from './useDatabase';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { SQLiteDBConnection } from '@capacitor-community/sqlite';
@@ -15,7 +16,10 @@ describe('Hook: useClientes', () => {
   beforeEach(() => {
     // Instanciamos un nuevo QueryClient para cada test, aislando la caché
     queryClient = new QueryClient({
-      defaultOptions: { queries: { retry: false } },
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
     });
   });
 
@@ -44,7 +48,7 @@ describe('Hook: useClientes', () => {
   it('debe ejecutar la consulta y retornar los clientes cuando la DB está lista', async () => {
     // Arrange: Simulamos una DB lista con datos
     const mockDb = {
-      query: vi.fn<() => Promise<any>>().mockResolvedValue({
+      query: vi.fn<any[], Promise<any>>().mockResolvedValue({
         values: [{ id: 1, nombre: 'Juan Perez' }],
       }),
     } as unknown as SQLiteDBConnection;
@@ -61,6 +65,34 @@ describe('Hook: useClientes', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data).toEqual([{ id: 1, nombre: 'Juan Perez' }]);
-    expect(mockDb.query).toHaveBeenCalledWith('SELECT * FROM clientes;');
+    expect(mockDb.query).toHaveBeenCalledWith(
+      'SELECT * FROM clientes ORDER BY created_at DESC;'
+    );
+  });
+
+  it('debe ejecutar la mutación de creación y invalidar la consulta de clientes', async () => {
+    const mockDb = {
+      run: vi.fn<any[], Promise<any>>().mockResolvedValue({ changes: 1 }),
+    } as unknown as SQLiteDBConnection;
+
+    vi.spyOn(dbContext, 'useDatabase').mockReturnValue({
+      db: mockDb,
+      isReady: true,
+    });
+
+    const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
+    const { result } = renderHook(() => useCreateCliente(), { wrapper });
+
+    await result.current.mutateAsync({
+      nombre: 'Ana Gómez',
+      telefono: '+5491123456789',
+      habeas_data_accepted: true,
+    });
+
+    expect(mockDb.run).toHaveBeenCalledWith(
+      'INSERT INTO clientes (nombre, telefono, habeas_data_accepted) VALUES (?, ?, ?);',
+      ['Ana Gómez', '+5491123456789', 1]
+    );
+    expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['clientes'] });
   });
 });
