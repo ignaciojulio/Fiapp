@@ -1,2 +1,67 @@
 /* For information on how to create your own theme, please refer to:
 http://ionicframework.com/docs/theming/ */
+:root {
+  /* LIGHT MODE */
+  --background: #f0f4f8;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #1d4ed8;
+  --primary-foreground: #ffffff;
+  --primary-subtle: #dbeafe;
+  --secondary: #eff6ff;
+  --secondary-foreground: #0f172a;
+  --muted: #e2e8f0;
+  --muted-foreground: #475569;
+  --accent: #eff6ff;
+  --accent-foreground: #0f172a;
+  --destructive: #b91c1c;
+  --destructive-foreground: #ffffff;
+  --debt: #b91c1c;
+  --debt-subtle: #fee2e2;
+  --credit: #15803d;
+  --credit-subtle: #dcfce7;
+  --border: #cbd5e1;
+  --input: transparent;
+  --input-background: #f1f5f9;
+  --switch-background: #94a3b8;
+  --ring: #1d4ed8;
+  --nav-backdrop: rgba(255, 255, 255, 0.94);
+  --nav-border: rgba(0, 0, 0, 0.07);
+  --overlay: rgba(15, 23, 42, 0.45);
+  --radius: 1.25rem;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+}
+
+/* DARK MODE (.dark class en <html>) */
+html.dark {
+  --background: #0d1526;
+  --foreground: #e2eaff;
+  --card: #162140;
+  --card-foreground: #e2eaff; /* Añadido para consistencia */
+  --popover: #1e2e52;
+  --popover-foreground: #e2eaff;
+  --primary: #2563eb;
+  --primary-subtle: rgba(37, 99, 235, 0.18);
+  --secondary: #1e2e52;
+  --secondary-foreground: #e2eaff;
+  --muted: #1a2840;
+  --muted-foreground: #94a3b8;
+  --accent: #1e2e52;
+  --accent-foreground: #e2eaff;
+  --destructive: #f87171;
+  --debt: #f87171;
+  --debt-subtle: rgba(248, 113, 113, 0.15);
+  --credit: #4ade80;
+  --credit-subtle: rgba(74, 222, 128, 0.13);
+  --border: rgba(255, 255, 255, 0.1);
+  --input-background: #1a2840;
+  --switch-background: #334155;
+  --ring: #2563eb;
+  --nav-backdrop: rgba(13, 21, 38, 0.94);
+  --nav-border: rgba(255, 255, 255, 0.08);
+  --overlay: rgba(0, 0, 0, 0.6);
+}

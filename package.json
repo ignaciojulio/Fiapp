@@ -30,7 +30,9 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-router": "^5.3.4",
-    "react-router-dom": "^5.3.4"
+    "react-router-dom": "^5.3.4",
+    "framer-motion": "^11.3.19",
+    "lucide-react": "^0.417.0"
   },
   "devDependencies": {
     "@capacitor/cli": "8.3.4",
@@ -42,6 +44,9 @@
     "@types/react-dom": "19.0.4",
     "@typescript-eslint/eslint-plugin": "^8.60.0",
     "@typescript-eslint/parser": "^8.60.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.40",
+    "tailwindcss": "^3.4.10",
     "@vitejs/plugin-legacy": "^5.0.0",
     "@vitejs/plugin-react": "^4.0.1",
     "react-error-boundary": "^3.1.4",

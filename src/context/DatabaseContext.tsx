@@ -67,12 +67,14 @@ export const SQLiteProvider: FC<{ children: ReactNode }> = ({ children }) => {
 
         const connection = await initPromise;
         await connection.execute(`
-          CREATE TABLE IF NOT EXISTS clientes (
-            id TEXT PRIMARY KEY,
-            nombre TEXT NOT NULL,
-            telefono TEXT NOT NULL,
-            habeas_data_accepted INTEGER DEFAULT 0,
-            created_at TEXT DEFAULT (datetime('now', 'localtime'))
+          CREATE TABLE IF NOT EXISTS clients (
+            id TEXT PRIMARY KEY NOT NULL,
+            name TEXT NOT NULL,
+            phone TEXT,
+            habeas_data_flag INTEGER NOT NULL,
+            balance REAL NOT NULL,
+            transactions TEXT NOT NULL,
+            createdAt TEXT NOT NULL
           );
         `);
 
