@@ -1,39 +1,28 @@
 import { useQuery } from '@tanstack/react-query';
-import { useDatabase } from '../context/useDatabase';
-
-export interface Cliente {
-  id: string;
-  nombre: string;
-  telefono: string;
-  habeas_data_accepted: number;
-  created_at: string;
-}
-
-export interface CreateClientePayload {
-  nombre: string;
-  telefono: string;
-  habeas_data_accepted: boolean;
-}
+import { useMemo } from 'react';
+import { useDatabase } from './useDatabase';
+import { SQLiteClientRepository } from '../infrastructure/repositories/SQLiteClientRepository';
+import type { Client } from '../domain/entities/Client';
 
 // Definimos la Query Key estricta como una constante inmutable (Tuple)
 export const CLIENTES_QUERY_KEY = ['clientes'] as const;
 
 export const useClientes = () => {
   const { db, isReady } = useDatabase();
+  const clientRepository = useMemo(() => {
+    if (!isReady || !db) return null;
+    return new SQLiteClientRepository(db);
+  }, [db, isReady]);
 
-  const query = useQuery<Cliente[]>({
+  const query = useQuery<Client[]>({
     queryKey: CLIENTES_QUERY_KEY,
-    queryFn: async (): Promise<Cliente[]> => {
-      if (!isReady || !db) throw new Error('Acceso prematuro a la DB');
-
-      const result = await db.query(
-        'SELECT * FROM clientes ORDER BY created_at DESC;'
-      );
-      return result.values || [];
+    queryFn: async (): Promise<Client[]> => {
+      if (!clientRepository) {
+        throw new Error('Repositorio no inicializado');
+      }
+      return clientRepository.getAll();
     },
-    enabled: isReady,
-    // staleTime: 0 es el valor por defecto en TanStack Query. De este modo,
-    // cada invalidación forzará una lectura real desde SQLite.
+    enabled: !!clientRepository,
   });
 
   const clientes = query.data ?? [];

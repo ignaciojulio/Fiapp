@@ -2,11 +2,13 @@ import type { SQLiteDBConnection } from '@capacitor-community/sqlite';
 import type { Client } from '../../domain/entities/Client';
 import type { ClientRepository } from '../../domain/repositories/ClientRepository';
 
+const TABLE_NAME = 'clients';
+
 export class SQLiteClientRepository implements ClientRepository {
   constructor(private readonly db: SQLiteDBConnection) {}
 
   async getAll(): Promise<Client[]> {
-    const statement = 'SELECT * FROM clients ORDER BY createdAt DESC;';
+    const statement = `SELECT * FROM ${TABLE_NAME} ORDER BY createdAt DESC;`;
     const result = await this.db.query(statement);
 
     return (result.values || []).map((client: any) => ({
@@ -18,7 +20,7 @@ export class SQLiteClientRepository implements ClientRepository {
   }
 
   async findById(id: string): Promise<Client | null> {
-    const statement = 'SELECT * FROM clients WHERE id = ?;';
+    const statement = `SELECT * FROM ${TABLE_NAME} WHERE id = ?;`;
     const result = await this.db.query(statement, [id]);
 
     if (!result.values || result.values.length === 0) {
@@ -36,7 +38,7 @@ export class SQLiteClientRepository implements ClientRepository {
 
   async save(client: Client): Promise<void> {
     const statement = `
-      INSERT INTO clients (id, name, phone, habeas_data_flag, balance, transactions, createdAt)
+      INSERT INTO ${TABLE_NAME} (id, name, phone, habeas_data_flag, balance, transactions, createdAt)
       VALUES (?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(id) DO UPDATE SET
         name = excluded.name,
@@ -57,7 +59,7 @@ export class SQLiteClientRepository implements ClientRepository {
   }
 
   async clearAll(): Promise<void> {
-    const statement = 'DELETE FROM clients;';
+    const statement = `DELETE FROM ${TABLE_NAME};`;
     await this.db.run(statement);
   }
 }

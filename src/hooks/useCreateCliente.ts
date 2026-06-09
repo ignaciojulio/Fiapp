@@ -1,49 +1,47 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useDatabase } from '../context/useDatabase';
-import {
-  CLIENTES_QUERY_KEY,
-  type Cliente,
-  type CreateClientePayload,
-} from './useClientes';
+import { CLIENTES_QUERY_KEY } from './useClientes';
+import type { Client } from '../domain/entities/Client';
+import { useServices } from '../context/ServicesContext'; // Suponiendo la nueva ubicación
+
+export type CreateClientePayload = {
+  name: string;
+  phone: string;
+  habeas_data_flag: boolean;
+};
 
 export const useCreateCliente = () => {
-  const { db } = useDatabase();
   const queryClient = useQueryClient();
+  const { clientService } = useServices();
 
   return useMutation<
-    unknown,
+    Client,
     Error,
     CreateClientePayload,
-    { previousClientes: Cliente[] | undefined }
+    { previousClientes: Client[] | undefined }
   >({
     mutationFn: async (nuevoCliente) => {
-      if (!db) throw new Error('Conexión a disco fallida');
-
-      return await db.run(
-        'INSERT INTO clientes (nombre, telefono, habeas_data_accepted) VALUES (?, ?, ?);',
-        [
-          nuevoCliente.nombre,
-          nuevoCliente.telefono,
-          nuevoCliente.habeas_data_accepted ? 1 : 0,
-        ]
-      );
+      if (!clientService) throw new Error('Servicio no inicializado');
+      return clientService.createClient(nuevoCliente);
     },
     onMutate: async (nuevoCliente) => {
       await queryClient.cancelQueries({ queryKey: CLIENTES_QUERY_KEY });
 
       const previousClientes =
-        queryClient.getQueryData<Cliente[]>(CLIENTES_QUERY_KEY);
+        queryClient.getQueryData<Client[]>(CLIENTES_QUERY_KEY);
 
-      const optimisticCliente: Cliente = {
-        id: `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-        nombre: nuevoCliente.nombre,
-        telefono: nuevoCliente.telefono,
-        habeas_data_accepted: nuevoCliente.habeas_data_accepted ? 1 : 0,
-        created_at: new Date().toISOString(),
+      // Creamos un cliente optimista que coincide con la entidad de dominio
+      const optimisticClient: Client = {
+        id: `temp-${Date.now()}`,
+        name: nuevoCliente.name,
+        phone: nuevoCliente.phone,
+        habeas_data_flag: nuevoCliente.habeas_data_flag,
+        balance: 0,
+        transactions: [],
+        createdAt: new Date(),
       };
 
-      queryClient.setQueryData<Cliente[]>(CLIENTES_QUERY_KEY, (current) =>
-        current ? [optimisticCliente, ...current] : [optimisticCliente]
+      queryClient.setQueryData<Client[]>(CLIENTES_QUERY_KEY, (current) =>
+        current ? [optimisticClient, ...current] : [optimisticClient]
       );
 
       return { previousClientes };

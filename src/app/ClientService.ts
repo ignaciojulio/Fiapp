@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { Client } from '../../domain/entities/Client';
-import type { ClientRepository } from '../../domain/repositories/ClientRepository';
+import type { Client } from '../domain/entities/Client';
+import type { ClientRepository } from '../domain/repositories/ClientRepository';
 
 export type CreateClientData = Omit<
   Client,

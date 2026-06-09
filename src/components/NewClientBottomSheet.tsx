@@ -59,6 +59,10 @@ export const NewClientBottomSheet: React.FC<NewClientBottomSheetProps> = ({
       handleBehavior="cycle"
     >
       <div className="mx-auto flex h-full w-full max-w-[393px] flex-col rounded-t-[32px] bg-[var(--card)]">
+        {/* Drag handle */}
+        <div className="flex justify-center pb-2 pt-4">
+          <div className="h-1.5 w-10 rounded-full bg-[var(--muted)]" />
+        </div>
         <div className="flex flex-shrink-0 items-center justify-between border-b-[1px] border-[var(--border)] px-6 py-4">
           <h2 className="text-[22px] font-semibold text-[var(--foreground)]">
             Nuevo Cliente
