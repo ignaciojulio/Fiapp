@@ -29,4 +29,10 @@ export class ClientService {
     await this.clientRepository.save(newClient);
     return newClient;
   }
+
+async getAllClients(): Promise<Client[]> {
+  return this.clientRepository.getAll();
 }
+
+}
+
