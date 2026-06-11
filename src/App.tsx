@@ -42,7 +42,11 @@ const App: React.FC = () => (
             <IonReactRouter>
               <IonRouterOutlet>
                 <Route exact path="/" component={DashboardScreen} />
-                <Route exact path="/client/:clientId" component={ClientDetailScreen} />
+                <Route
+                  exact
+                  path="/client/:clientId"
+                  component={ClientDetailScreen}
+                />
                 <Route exact path="/settings" component={SettingsScreen} />
                 <Route path="*">
                   <Redirect to="/" />

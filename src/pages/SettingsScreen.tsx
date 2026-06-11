@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { IonPage, IonContent } from '@ionic/react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useHistory } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { useClients } from '../context/ClientsContext';
 import { BottomNav } from '../components/BottomNav';
@@ -106,7 +106,7 @@ const SectionCard: React.FC<SectionCardProps> = ({ label, children }) => (
 );
 
 export const SettingsScreen: React.FC = () => {
-  const navigate = useNavigate();
+  const history = useHistory();
   const location = useLocation();
   const { isDark, toggle } = useTheme();
   const { clearAll } = useClients();
@@ -262,7 +262,7 @@ export const SettingsScreen: React.FC = () => {
 
         <BottomNav
           currentPath={location.pathname}
-          onNavigate={(path) => navigate(path)}
+          onNavigate={(path) => history.push(path)}
         />
       </IonContent>
     </IonPage>

@@ -6,8 +6,8 @@ import {
   IonFabButton,
   IonIcon,
 } from '@ionic/react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Plus, Search, TrendingUp, TrendingDown, Users } from 'lucide-react';
+import { useLocation, useHistory } from 'react-router-dom';
+import { Search, TrendingUp, TrendingDown, Users } from 'lucide-react';
 import { useClients } from '../context/ClientsContext';
 import { formatCOP } from '../utils/formatCOP';
 import { ClientListItem } from '../components/ClientListItem';
@@ -15,7 +15,7 @@ import { NewClientBottomSheet } from '../components/NewClientBottomSheet';
 import { BottomNav } from '../components/BottomNav';
 
 export const DashboardScreen: React.FC = () => {
-  const navigate = useNavigate();
+  const history = useHistory();
   const location = useLocation();
   const { clients, isLoading, addClient } = useClients();
 
@@ -85,7 +85,10 @@ export const DashboardScreen: React.FC = () => {
     return (
       <div className="space-y-3">
         {filteredClients.map((client) => (
-          <div key={client.id} onClick={() => navigate(`/client/${client.id}`)}>
+          <div
+            key={client.id}
+            onClick={() => history.push(`/client/${client.id}`)}
+          >
             <ClientListItem
               name={client.name}
               amount={client.balance}
@@ -245,7 +248,7 @@ export const DashboardScreen: React.FC = () => {
 
         <BottomNav
           currentPath={location.pathname}
-          onNavigate={(path) => navigate(path)}
+          onNavigate={(path) => history.push(path)}
         />
       </IonContent>
     </IonPage>

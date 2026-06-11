@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import { IonPage, IonContent, IonFooter, IonToolbar } from '@ionic/react';
 import { ArrowLeft, Phone, Calendar, Plus, Minus } from 'lucide-react';
 import { formatCOP } from '../utils/formatCOP';
@@ -10,7 +10,7 @@ import { AbonarBottomSheet } from '../components/AbonarBottomSheet';
 
 export const ClientDetailScreen: React.FC = () => {
   const { clientId } = useParams<{ clientId: string }>();
-  const navigate = useNavigate();
+  const history = useHistory();
   const { getClientById, addTransaction, isLoading } = useClients();
 
   const [isFiarOpen, setFiarOpen] = useState(false);
@@ -21,9 +21,9 @@ export const ClientDetailScreen: React.FC = () => {
   useEffect(() => {
     // Si después de cargar, el cliente no existe, volver al inicio.
     if (!isLoading && !client) {
-      navigate('/', { replace: true });
+      history.replace('/');
     }
-  }, [isLoading, client, navigate]);
+  }, [isLoading, client, history]);
 
   if (isLoading || !client) {
     return (
@@ -57,7 +57,7 @@ export const ClientDetailScreen: React.FC = () => {
           <header className="flex items-center gap-3 px-5 pb-4 pt-14">
             <button
               className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--card)]"
-              onClick={() => navigate('/')}
+              onClick={() => history.push('/')}
               aria-label="Volver"
             >
               <ArrowLeft className="h-5 w-5 text-[var(--foreground)]" />

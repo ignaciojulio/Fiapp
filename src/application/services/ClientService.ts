@@ -30,9 +30,7 @@ export class ClientService {
     return newClient;
   }
 
-async getAllClients(): Promise<Client[]> {
-  return this.clientRepository.getAll();
+  async getAllClients(): Promise<Client[]> {
+    return this.clientRepository.getAll();
+  }
 }
-
-}
-
