@@ -1,0 +1,22 @@
+{
+  "name": "Fiapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev:client": "pnpm -F fiapp-client run dev",
+    "dev:server": "pnpm -F fiapp-server run dev",
+    "dev:all": "pnpm -r --parallel run dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^11.5.1",
+      "onFail": "download"
+    }
+  },
+  "type": "module"
+}
