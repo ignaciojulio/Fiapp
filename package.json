@@ -6,7 +6,11 @@
   "scripts": {
     "dev:client": "pnpm -F fiapp-client run dev",
     "dev:server": "pnpm -F fiapp-server run dev",
-    "dev:all": "pnpm -r --parallel run dev"
+    "dev:all": "pnpm -r --parallel run dev",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --check",
+    "format:write": "prettier . --write"
   },
   "keywords": [],
   "author": "",
@@ -18,5 +22,13 @@
       "onFail": "download"
     }
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.6.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.7.0",
+    "prettier": "^3.9.4",
+    "typescript-eslint": "^8.62.1"
+  }
 }

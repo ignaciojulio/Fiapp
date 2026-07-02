@@ -1,0 +1,6 @@
+{
+  "path-intellisense.autoSlashAfterDirectory": true,
+  "path-intellisense.absolutePathToWorkspace": false,
+  "path-intellisense.extensionOnImport": true,
+  "path-intellisense.showHiddenFiles": false
+}
